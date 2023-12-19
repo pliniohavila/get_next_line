@@ -1,5 +1,4 @@
 The open() function shall return a file descriptor for the named file that is the lowest file descriptor not currently open for that process. The open file description is new, and therefore the file descriptor shall not share it with any other process in the system. The FD_CLOEXEC file descriptor flag associated with the new file descriptor shall be cleared.
-
 The file offset used to mark the current position within the file shall be set to the beginning of the file.
 
 The file status flags and file access modes of the open file description shall be set according to the value of oflag.

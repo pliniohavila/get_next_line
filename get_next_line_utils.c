@@ -1,4 +1,4 @@
-#include "libft.h"
+#include "get_next_line.h"
 
 char    *ft_strchr(const char *s, size_t c)
 {
