@@ -1,4 +1,4 @@
----
+
 
 # 🚀 What is get_next_line?
 
@@ -11,8 +11,6 @@ Read line: correct behavior
 NULL: nothing else to read or an error occurred
 ### External functs.
 `read`, `malloc`, `free`
-
----
 
 # :bookmark_tabs: Info
 
