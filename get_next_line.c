@@ -30,15 +30,18 @@ char    *get_next_line(int fd)
     char        *line;
     char        *tmp_line;
     char        buf[BUFFER_SIZE];
+    static char state[BUFFER_SIZE];  // from React
     int         size;
     int         length;
     int         bytes_reads;
 
     size = BUFFER_SIZE;
-    length = 0;
+    ft_bzero(state, size);
     line = (char*)malloc(sizeof(char) * size);
     if (!line) return NULL;
+    length = (int)ft_strlen(state);
     ft_bzero(line, size);
+    ft_strlcpy(line, state, length);
     while ((bytes_reads = read(fd, buf, BUFFER_SIZE - 1)) > 0)
     {
         length += bytes_reads;
@@ -54,34 +57,14 @@ char    *get_next_line(int fd)
         }
         if (ft_strchr(buf, '\n') != NULL)
         {
-            printf("(ft_strchr(buf, '\n')  %s\n", ft_strchr(buf, '\n'));
             ft_strlcat(line, buf, (int)(ft_strchr(buf, '\n') - buf));
+            ft_strlcpy(state, ft_strchr(buf, '\n') + 1, BUFFER_SIZE);
             return (line);
         }
         ft_strlcat(line, buf, bytes_reads);
     }
-    if (bytes_reads == -1)
+    
+    if (bytes_reads <= 0)
         return NULL;
     return (line); 
 }
-
-int     get_line_len(int fd)
-{
-    int         bytes_reads;
-    int         line_len;
-    char        line[BUFFER_SIZE];
-
-    ft_bzero(line, BUFFER_SIZE);
-    line_len = 0;
-    while ((bytes_reads = read(fd, line, BUFFER_SIZE - 1)) > 0)
-    {
-        if (ft_strchr(line, '\n'))
-        {
-            line_len += (int)(ft_strchr(line, '\n') - line);
-            return (line_len);
-        }
-        line_len += bytes_reads;
-    }
-    return (line_len);
-}
-

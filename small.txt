@@ -1,0 +1,4 @@
+O_RDONLY
+Open for reading only.
+O_WRONLY
+Open for writing only.

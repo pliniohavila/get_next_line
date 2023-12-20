@@ -1,20 +1,6 @@
-#include "get_next_line.h"
-
-char    *ft_strchr(const char *s, size_t c)
-{
-    size_t      i;
-    char        cmp;
-
-    i = 0;
-    cmp = (char)c;
-    while (s[i] != '\0')
-    {
-        if (s[i] == cmp)
-            return ((char*)&s[i]);
-        i++;
-    }
-    return (NULL);
-}
+#include <stdio.h>
+#include <stdlib.h>
+// #include "get_next_line.h"
 
 size_t      ft_strlen(const char *s)
 {
@@ -39,24 +25,6 @@ void    ft_bzero(void *s, size_t n)
     return;
 }
 
-size_t  ft_strlcpy(char *dst, const char *src, size_t n) 
-{
-    size_t      i;
-
-    if ((!dst) && (!src))
-        return (0);
-    if (n == 0)
-        return (ft_strlen(src));
-    i = 0;
-    while ((src[i] != '\0') && i < (n - 1))
-    {
-        dst[i] = src[i];
-        i++;
-    }
-    dst[i] = '\0';
-    return (ft_strlen(src));
-}
-
 size_t  ft_strlcat(char *dst, const char *src, size_t n)
 {
     size_t      i;
@@ -77,4 +45,21 @@ size_t  ft_strlcat(char *dst, const char *src, size_t n)
     }
     dst[i] = '\0';
     return (n + len_src);
+}
+
+
+int main(void)
+{
+    char *s;
+
+    s = (char*)malloc(sizeof(char) * 5);
+    if (!s) return -1;
+    ft_bzero(s, 5);
+    printf("S: %s\n", s);
+    printf("%d\n", (int)ft_strlen(s));
+    ft_strlcat(s, "abc", 4);
+    printf("S: %s\n", s);
+    printf("%d\n", (int)ft_strlen(s));
+    free(s);
+    return (0);
 }
