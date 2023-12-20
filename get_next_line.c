@@ -5,6 +5,7 @@
 int     main(int argc, char **argv)
 {
     int     fd;
+    char    *line;
 
     if (argc < 2)
         fd = STDIN_FILENO;
@@ -12,11 +13,56 @@ int     main(int argc, char **argv)
         fd = open(argv[1], O_RDONLY);
     if (fd < 0)
         return (-1);
-    // while (1)
-    printf("%s\n", get_next_line(fd));
+    line = malloc(1 * sizeof(char));
+    while (line != NULL)
+    {
+        free(line);
+        line = get_next_line(fd);
+        printf("%s\n", line);
+    }
     if (fd > 2)
         close(fd);
     return (0);
+}
+
+char    *get_next_line(int fd)
+{
+    char        *line;
+    char        *tmp_line;
+    char        buf[BUFFER_SIZE];
+    int         size;
+    int         length;
+    int         bytes_reads;
+
+    size = BUFFER_SIZE;
+    length = 0;
+    line = (char*)malloc(sizeof(char) * size);
+    if (!line) return NULL;
+    ft_bzero(line, size);
+    while ((bytes_reads = read(fd, buf, BUFFER_SIZE - 1)) > 0)
+    {
+        length += bytes_reads;
+        if (length >= size)
+        {
+            size *= 2;
+            tmp_line = (char*)malloc(sizeof(char) * size);
+            if (!tmp_line) return NULL;
+            ft_bzero(tmp_line, size);
+            ft_strlcpy(tmp_line, line, length);
+            free(line);
+            line = tmp_line;
+        }
+        if (ft_strchr(buf, '\n') != NULL)
+        {
+            printf("(ft_strchr(buf, '\n')  %s\n", ft_strchr(buf, '\n'));
+            ft_strlcat(line, buf, (int)(ft_strchr(buf, '\n') - buf));
+            return (line);
+        }
+        ft_strlcat(line, buf, bytes_reads);
+    }
+    if (bytes_reads == -1)
+        return NULL;
+    return (line); 
 }
 
 int     get_line_len(int fd)
@@ -37,20 +83,5 @@ int     get_line_len(int fd)
         line_len += bytes_reads;
     }
     return (line_len);
-}
-
-char    *get_next_line(int fd)
-{
-    char        *line;
-    int         line_len;
-
-    line = NULL;
-    line_len = get_line_len(fd) + 1;
-    printf("line_len: %d\n", line_len);
-    line = (char*)malloc(sizeof(char) * line_len);
-    if (read(fd, line, line_len) < 0)
-        return NULL;
-    line[line_len] = '\0';
-    return (line); 
 }
 

@@ -4,6 +4,7 @@
 
 #include <unistd.h>
 #include <fcntl.h>
+#include <stddef.h>
 #include <stdlib.h>
 
 #ifndef BUFFER_SIZE
@@ -15,3 +16,5 @@ int         get_line_len(int fd);
 size_t      ft_strlen(const char *s);
 void        ft_bzero(void *s, size_t n);
 char        *ft_strchr(const char *s, size_t c);
+size_t      ft_strlcpy(char *dst, const char *src, size_t n);
+size_t      ft_strlcat(char *dst, const char *src, size_t n);
