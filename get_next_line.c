@@ -18,7 +18,8 @@ int     main(int argc, char **argv)
     {
         free(line);
         line = get_next_line(fd);
-        printf("%s\n", line);
+        if (line != NULL)
+            printf("%s\n", line);
     }
     if (fd > 2)
         close(fd);
@@ -30,18 +31,35 @@ char    *get_next_line(int fd)
     char        *line;
     char        *tmp_line;
     char        buf[BUFFER_SIZE];
-    static char state[BUFFER_SIZE];  // from React
+    char        *nl;
     int         size;
     int         length;
     int         bytes_reads;
+    static char state[BUFFER_SIZE];  // from React
+    static int  k = 0;
 
     size = BUFFER_SIZE;
-    ft_bzero(state, size);
     line = (char*)malloc(sizeof(char) * size);
     if (!line) return NULL;
-    length = (int)ft_strlen(state);
     ft_bzero(line, size);
+    length = 0;
+    if (k == 0)
+        ft_bzero(state, size);
+    if (k == 1)
+    {
+        if (ft_strchr(state, '\n') != NULL)
+        {
+            nl = ft_strchr(state, '\n') + 1;
+            ft_strlcat(line, state, (int)(nl - state - 1));
+            ft_strlcpy(buf, nl, BUFFER_SIZE - (int)(nl - state - 1));
+            ft_strlcpy(state, buf, ft_strlen(buf));
+            k = 1;
+            return (line);
+        }
+        length = (int)ft_strlen(state);
+    }
     ft_strlcpy(line, state, length);
+    ft_bzero(buf, size);
     while ((bytes_reads = read(fd, buf, BUFFER_SIZE - 1)) > 0)
     {
         length += bytes_reads;
@@ -57,14 +75,18 @@ char    *get_next_line(int fd)
         }
         if (ft_strchr(buf, '\n') != NULL)
         {
-            ft_strlcat(line, buf, (int)(ft_strchr(buf, '\n') - buf));
-            ft_strlcpy(state, ft_strchr(buf, '\n') + 1, BUFFER_SIZE);
+            nl = ft_strchr(buf, '\n') + 1;
+            ft_strlcat(line, buf, (int)(nl - buf - 1));
+            ft_strlcpy(state, nl, BUFFER_SIZE - (int)(nl - buf - 1));
+            k = 1;
             return (line);
         }
         ft_strlcat(line, buf, bytes_reads);
     }
-    
     if (bytes_reads <= 0)
+    {
+        free(line);
         return NULL;
+    }
     return (line); 
 }
