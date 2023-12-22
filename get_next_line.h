@@ -12,7 +12,8 @@
 #endif
 
 char        *get_next_line(int fd);
-int         get_line_len(int fd);
+char        *extend_line(char *line, int length, int size);
+int         get_size_buf(char *nl, char *buf);
 size_t      ft_strlen(const char *s);
 void        ft_bzero(void *s, size_t n);
 char        *ft_strchr(const char *s, size_t c);

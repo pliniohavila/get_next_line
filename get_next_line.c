@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include "get_next_line.h"
 
-
 int     main(int argc, char **argv)
 {
     int     fd;
@@ -26,58 +25,74 @@ int     main(int argc, char **argv)
     return (0);
 }
 
+char    *extend_line(char *line, int length, int size)
+{
+    char        *tmp_line;
+    
+    tmp_line = (char*)malloc(sizeof(char) * size);
+    if (!tmp_line) 
+        return NULL;
+    ft_bzero(tmp_line, size);
+    ft_strlcpy(tmp_line, line, length);
+    free(line);
+    return (tmp_line);
+}
+
+int     get_size_buf(char *nl, char *buf)
+{
+    return (int)(nl - buf - 1);
+}
+
 char    *get_next_line(int fd)
 {
     char        *line;
-    char        *tmp_line;
     char        buf[BUFFER_SIZE];
-    char        *nl;
+    char        *nl; // delimeter
     int         size;
     int         length;
     int         bytes_reads;
-    static char state[BUFFER_SIZE];  // from React
+    static char state[BUFFER_SIZE]; 
     static int  k = 0;
 
     size = BUFFER_SIZE;
     line = (char*)malloc(sizeof(char) * size);
-    if (!line) return NULL;
+    if (!line) 
+        return NULL;
     ft_bzero(line, size);
     length = 0;
     if (k == 0)
         ft_bzero(state, size);
     if (k == 1)
     {
-        if (ft_strchr(state, '\n') != NULL)
+        nl = ft_strchr(state, '\n');
+        if (nl != NULL)
         {
-            nl = ft_strchr(state, '\n') + 1;
-            ft_strlcat(line, state, (int)(nl - state - 1));
-            ft_strlcpy(buf, nl, BUFFER_SIZE - (int)(nl - state - 1));
-            ft_strlcpy(state, buf, ft_strlen(buf));
+            nl += 1;
+            ft_strlcat(line, state, get_size_buf(nl, state));
+            ft_strlcpy(buf, nl, ft_strlen(nl) + 1);
+            ft_strlcpy(state, buf, ft_strlen(buf) + 1);
             k = 1;
             return (line);
         }
-        length = (int)ft_strlen(state);
+        length = (int)ft_strlen(state) + 1;
     }
     ft_strlcpy(line, state, length);
     ft_bzero(buf, size);
     while ((bytes_reads = read(fd, buf, BUFFER_SIZE - 1)) > 0)
     {
+        nl = NULL;
         length += bytes_reads;
         if (length >= size)
         {
             size *= 2;
-            tmp_line = (char*)malloc(sizeof(char) * size);
-            if (!tmp_line) return NULL;
-            ft_bzero(tmp_line, size);
-            ft_strlcpy(tmp_line, line, length);
-            free(line);
-            line = tmp_line;
+            line = extend_line(line, length, size);
         }
-        if (ft_strchr(buf, '\n') != NULL)
+        nl = ft_strchr(buf, '\n');
+        if (nl != NULL)
         {
-            nl = ft_strchr(buf, '\n') + 1;
-            ft_strlcat(line, buf, (int)(nl - buf - 1));
-            ft_strlcpy(state, nl, BUFFER_SIZE - (int)(nl - buf - 1));
+            nl += 1;
+            ft_strlcat(line, buf, get_size_buf(nl, buf));
+            ft_strlcpy(state, nl, ft_strlen(nl) + 1);
             k = 1;
             return (line);
         }
@@ -88,5 +103,6 @@ char    *get_next_line(int fd)
         free(line);
         return NULL;
     }
+    k = 0;
     return (line); 
 }
